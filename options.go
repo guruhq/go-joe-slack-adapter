@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/slack-go/slack"
@@ -16,6 +17,7 @@ type Option func(*Config) error
 // Config contains the configuration of a BotAdapter.
 type Config struct {
 	Token             string
+	AppToken          string
 	VerificationToken string
 	Name              string
 	Debug             bool
@@ -35,6 +37,9 @@ type Config struct {
 
 	// Options if you want to use the Slack Events API. Ignored on the normal RTM adapter.
 	EventsAPI EventsAPIConfig
+
+	// Options if you want to use the Slack Events API. Ignored on the normal RTM adapter.
+	SocketMode SocketModeConfig
 }
 
 // EventsAPIConfig contains the configuration of an EventsAPIServer.
@@ -45,6 +50,16 @@ type EventsAPIConfig struct {
 	WriteTimeout      time.Duration
 	TLSConf           *tls.Config
 	CertFile, KeyFile string
+}
+
+// SocketModeConfig contains the configuration of an SocketModeServer.
+type SocketModeConfig struct {
+	//Middleware        func(next http.Handler) http.Handler
+	ShutdownTimeout time.Duration
+	ReadTimeout     time.Duration
+	WriteTimeout    time.Duration
+	//TLSConf           *tls.Config
+	//CertFile, KeyFile string
 }
 
 func (conf Config) slackOptions() []slack.Option {
@@ -60,6 +75,7 @@ func (conf Config) slackOptions() []slack.Option {
 
 	opts := []slack.Option{
 		slack.OptionAPIURL(conf.SlackAPIURL),
+		slack.OptionAppLevelToken(os.Getenv("SLACK_APP_TOKEN")),
 	}
 
 	if conf.Debug {
