@@ -1,4 +1,4 @@
-module github.com/go-joe/slack-adapter/v2
+module github.com/guruhq/go-joe-slack-adapter/v3
 
 go 1.14
 
